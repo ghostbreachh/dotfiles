@@ -1,0 +1,138 @@
+# i3-wm Configuration - Majestic Purple & Black Edition
+# Mod Key = Windows / Super Key
+set $mod Mod4
+
+# Font for window titles and bar
+font pango:FiraCode Nerd Font 8
+
+# Border widths & Window Gaps (i3-gaps)
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders smart
+gaps inner 8
+gaps outer 4
+smart_gaps on
+smart_borders on
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# Start a terminal (Alacritty)
+bindsym $mod+Return exec alacritty
+
+# Kill focused window
+bindsym $mod+Shift+q kill
+
+# Start Rofi app launcher
+bindsym $mod+d exec rofi -show drun
+
+# Window Focus (Arrow keys)
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move Window (Arrow keys)
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# Split orientation
+bindsym $mod+h split h
+bindsym $mod+v split v
+
+# Fullscreen mode
+bindsym $mod+f fullscreen toggle
+
+# Toggle tiling/floating
+bindsym $mod+Shift+space floating toggle
+
+# Switch to workspace
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+
+# Move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+
+# Reload/Restart i3
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+
+# Exit i3 session
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Exit i3? (Logs out your X session)' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# Volume Controls (Pipewire / wpctl - Capped at 100%)
+bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
+bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+bindsym XF86AudioMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+
+# Screen Brightness Controls (brightnessctl)
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
+# Screen Capture / Screenshots (maim + xclip)
+bindsym Print exec --no-startup-id maim -s | xclip -selection clipboard -t image/png
+bindsym $mod+Print exec --no-startup-id maim -u -i $(xdotool getactivewindow) ~/Pictures/$(date +%F-%T).png
+
+# Screen Lock (Mod+l)
+bindsym $mod+l exec --no-startup-id ~/.local/bin/blur_lock.sh
+
+# Shortcut to cycle/toggle through floating guide cheat sheets (Mod+/)
+bindsym $mod+slash exec --no-startup-id ~/.local/bin/toggle_guides.py
+for_window [title="Shortcuts Guide"] floating enable, resize set 800 600, move position center
+
+# Toggle gaps on/off dynamically (Mod+g)
+bindsym $mod+g gaps inner current toggle 8; gaps outer current toggle 4
+
+# Easy Redshift Night Filter Toggle (Mod+Shift+n)
+bindsym $mod+Shift+n exec --no-startup-id bash -c "pgrep -x redshift >/dev/null && killall redshift || (redshift -l 31.5:74.3 -t 5700:3600 &)"
+
+# Autostart applications on boot
+exec_always --no-startup-id feh --bg-scale ~/Wallpapers/purple_neon_minimalist_wallpaper.jpg
+exec_always --no-startup-id picom -b
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+exec --no-startup-id nm-applet
+exec --no-startup-id redshift -l 31.5:74.3 -t 5700:3600
+
+# Color Scheme Definitions
+set $bg-color            #09050e
+set $inactive-bg-color   #1a1226
+set $text-color          #ebd9fc
+set $inactive-text-color #4d3968
+set $purple              #9f52f0
+set $dark-purple         #6d24be
+
+# Class                 Border              Background           Text                 Indicator           Child Border
+client.focused          $purple             $purple              $text-color          $purple             $purple
+client.focused_inactive $inactive-bg-color  $inactive-bg-color   $inactive-text-color $inactive-bg-color  $inactive-bg-color
+client.unfocused        $bg-color           $bg-color            $inactive-text-color $bg-color           $bg-color
+client.urgent           #ff5555             #ff5555              $text-color          #ff5555             #ff5555
+
+# Floating window rules for status bar actions
+for_window [title="Volume Control"] floating enable, resize set 600 400, move position center
+for_window [title="Battery Details"] floating enable, resize set 600 450, move position center
+for_window [title="AI Companion"] floating enable, border none, sticky enable
+for_window [title="Watermark Remover"] floating enable, resize set 900 700, move position center
+
+
+# Keyboard shortcut to toggle AI Companion (Mod+Shift+V)
+bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/toggle_companion.sh
+
+
+
+
+

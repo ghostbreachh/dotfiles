@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050209;
+            --card-bg: rgba(26, 18, 38, 0.4);
+            --card-border: rgba(159, 82, 240, 0.15);
+            --card-hover-border: rgba(159, 82, 240, 0.55);
+            --text-primary: #ebd9fc;
+            --text-secondary: #a38db8;
+            --purple-accent: #9f52f0;
+            --purple-glow: rgba(159, 82, 240, 0.35);
+            --shadow-color: rgba(0, 0, 0, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Ambient Dynamic Background Blobs */
+        .ambient-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(130px);
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            width: 450px;
+            height: 450px;
+            background: var(--purple-accent);
+            top: -50px;
+            left: -50px;
+            animation: floatBlob1 25s infinite alternate ease-in-out;
+        }
+
+        .blob-2 {
+            width: 550px;
+            height: 550px;
+            background: #53179b;
+            bottom: -100px;
+            right: -100px;
+            animation: floatBlob2 30s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatBlob1 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(100px, 80px) scale(1.15); }
+            100% { transform: translate(-40px, 120px) scale(0.9); }
+        }
+
+        @keyframes floatBlob2 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-120px, -60px) scale(0.85); }
+            100% { transform: translate(60px, -140px) scale(1.1); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header / Clock Widget */
+        header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #time {
+            font-size: 5rem;
+            font-weight: 800;
+            letter-spacing: -3px;
+            background: linear-gradient(135deg, #fff 40%, var(--purple-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 30px rgba(159, 82, 240, 0.2);
+            font-feature-settings: "tnum";
+            cursor: default;
+        }
+
+        #date-greeting {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #greeting-text {
+            font-weight: 600;
+            color: var(--purple-accent);
+            text-shadow: 0 0 10px var(--purple-glow);
+        }
+
+        #quote-display {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+            margin-top: 6px;
+            max-width: 500px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #quote-display:hover {
+            color: #fff;
+            opacity: 1;
+        }
+
+        /* Search Section */
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-box form {
+            width: 100%;
+            display: flex;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            outline: none;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+            box-shadow: 0 4px 30px var(--shadow-color);
+        }
+
+        .search-box input:focus {
+            border-color: var(--purple-accent);
+            box-shadow: 0 0 25px var(--purple-glow), 0 4px 30px var(--shadow-color);
+            background: rgba(26, 18, 38, 0.7);
+            transform: scale(1.01);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            width: 100%;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .category-card:hover {
+            border-color: var(--card-hover-border);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(159, 82, 240, 0.12);
+        }
+
+        .category-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--purple-accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px dashed rgba(159, 82, 240, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .category-title svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--purple-accent);
+        }
+
+        .links-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1.05rem;
+            font-weight: 400;
+            padding: 4px 0;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .link-item a:hover {
+            color: #fff;
+            transform: translateX(6px);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .link-item svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+            transition: all 0.25s ease;
+        }
+
+        .link-item a:hover svg {
+            fill: var(--purple-accent);
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 5px var(--purple-accent));
+        }
+
+        /* Footer Info */
+        footer {
+            margin-top: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.4;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Glowing Blobs -->
+    <div class="ambient-glow blob-1"></div>
+    <div class="ambient-glow blob-2"></div>
+
+    <div class="container">
+        <!-- Clock, Greeting, and Dynamic Quotes -->
+        <header>
+            <div id="time">00:00</div>
+            <div id="date-greeting">
+                <span id="date-text">Loading date...</span>
+                <span>•</span>
+                <span id="greeting-text">Welcome</span>
+            </div>
+            <div id="quote-display" onclick="newQuote()">Initializing terminal connection...</div>
+        </header>
+
+        <!-- Dynamic Search -->
+        <div class="search-box">
+            <form action="https://duckduckgo.com/" method="get">
+                <input type="text" name="q" placeholder="Type to search DuckDuckGo (Themed)..." autofocus autocomplete="off">
+                <input type="hidden" name="kae" value="d">
+                <input type="hidden" name="k7" value="050209">
+                <input type="hidden" name="k8" value="ebd9fc">
+                <input type="hidden" name="k9" value="9f52f0">
+                <input type="hidden" name="kaa" value="6d24be">
+                <input type="hidden" name="kj" value="050209">
+                <input type="hidden" name="kx" value="9f52f0">
+                <input type="hidden" name="kt" value="o">
+            </form>
+        </div>
+
+        <!-- Dashboard Links Grid -->
+        <div class="dashboard-grid">
+            <!-- Recon & Bounty -->
+            <div class="category-card">
+                <div class="category-title">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+                    Recon & Bounty
+                </div>
+                <ul class="links-list">
+                    <li class="link-item">
+                        <a href="https://github.com" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.27.098-2.65 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.479C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                            GitHub
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://hackerone.com" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                            HackerOne
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://bugcrowd.com" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 6v4h2v-4h-2zm0-3v2h2V9h-2z"/></svg>
+                            Bugcrowd
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://portswigger.net/web-security" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                            PortSwigger Academy
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- AI & Dev Tools -->
+            <div class="category-card">
+                <div class="category-title">
+                    <svg viewBox="0 0 24 24"><path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3zm-2 10H6V7h12v12zm-9-6c-.83 0-1.5-.67-1.5-1.5S8.17 10 9 10s1.5.67 1.5 1.5S9.83 13 9 13zm6 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-5.75 3.5h5.5c-.28 1.15-1.32 2-2.75 2s-2.47-.85-2.75-2z"/></svg>
+                    AI & Dev Tools
+                </div>
+                <ul class="links-list">
+                    <li class="link-item">
+                        <a href="https://gemini.google.com" target="_blank">
+                            <!-- Sparkling Gemini Custom SVG Icon -->
+                            <svg viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 .897.557l2.25 4.5 4.5 2.25a1 1 0 0 1 0 1.786l-4.5 2.25-2.25 4.5a1 1 0 0 1-1.794 0l-2.25-4.5-4.5-2.25a1 1 0 0 1 0-1.786l4.5-2.25 2.25-4.5A1 1 0 0 1 12 2zm6.5 14.5a.5.5 0 0 1 .448.278l.802 1.604 1.604.802a.5.5 0 0 1 0 .894l-1.604.802-.802 1.604a.5.5 0 0 1-.894 0l-.802-1.604-1.604-.802a.5.5 0 0 1 0-.894l1.604-.802.802-1.604a.5.5 0 0 1 .448-.278z"/></svg>
+                            Gemini
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="http://localhost:8080" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-4h8v4zm8 0h-6v-4h6v4zm0-6H4V6h16v4z"/></svg>
+                            Localhost:8080
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://gchq.github.io/CyberChef/" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.58 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm1-8h-2v4h2v-4zm0-3h-2v2h2V7z"/></svg>
+                            CyberChef
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://book.hacktricks.xyz/" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4zm12 16H6v-2h12v2zm0-4H6V6h12v10z"/></svg>
+                            HackTricks
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://google.com" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.78 0 3.42.68 4.66 1.8l2.62-2.62C17.6 1.57 15.08 0 12.24 0c-6.07 0-11 4.93-11 11s4.93 11 11 11c6.33 0 10.5-4.45 10.5-10.7 0-.72-.08-1.27-.19-1.72l-10.31.005z"/></svg>
+                            Google Search
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Cyber Ranges & Entertainment -->
+            <div class="category-card">
+                <div class="category-title">
+                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Ranges & Lounge
+                </div>
+                <ul class="links-list">
+                    <li class="link-item">
+                        <a href="https://tryhackme.com" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+                            TryHackMe
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://www.hackthebox.com" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                            Hack The Box
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://youtube.com" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.06 0 .58-.03 1.26-.1 2.06-.06.81-.15 1.43-.28 1.9-.2.77-.77 1.34-1.54 1.54-.47.13-1.1.22-1.9.28-.8.07-1.49.1-2.06.1-.58 0-1.26-.03-2.06-.1-.81-.06-1.43-.15-1.9-.28-.77-.2-1.34-.77-1.54-1.54-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.06 0-.58.03-1.26.1-2.06.06-.81.15-1.43.28-1.9.2-.77.77-1.34 1.54-1.54.47-.13 1.1-.22 1.9-.28.8-.07 1.49-.1 2.06-.1.58 0 1.26.03 2.06.1.81.06 1.43.15 1.9.28.77.2 1.34.77 1.54 1.54z"/></svg>
+                            YouTube
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="https://mail.google.com" target="_blank">
+                            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            Gmail
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <span>SYSTEM STATE: ACTIVE • RATENCY: NOMINAL • DOUBLE-CLICK CLOCK TO FORCE UPDATE</span>
+        </footer>
+    </div>
+
+    <script>
+        const quotes = [
+            "Hack the planet. Stay curious.",
+            "Information wants to be free, security makes it safe.",
+            "Check for BOLA, parameter pollution, and IDOR.",
+            "Initialize recon engine... target scanning in progress.",
+            "Secure parameters. Escape outputs. Trust no one.",
+            "There's no patch for human stupidity.",
+            "One script to rule them all, one token to log in.",
+            "If it's smart, it's vulnerable.",
+            "The quieter you become, the more you are able to hear.",
+            "Find the vuln, get the bounty, drink the coffee.",
+            "Are you testing JWT signature verification?",
+            "Look for hidden endpoints in JavaScript chunks."
+        ];
+
+        function newQuote() {
+            const quoteEl = document.getElementById('quote-display');
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            quoteEl.textContent = `[~] ${quotes[randomIndex]}`;
+        }
+
+        function updateTime() {
+            const timeEl = document.getElementById('time');
+            const dateTextEl = document.getElementById('date-text');
+            const greetingTextEl = document.getElementById('greeting-text');
+
+            const now = new Date();
+            
+            // Format Time
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            timeEl.textContent = `${hours}:${minutes}`;
+
+            // Format Date
+            const options = { weekday: 'long', month: 'short', day: 'numeric' };
+            dateTextEl.textContent = now.toLocaleDateString('en-US', options);
+
+            // Dynamic Greeting
+            const hr = now.getHours();
+            let greeting = "Hello, Umar";
+            if (hr >= 5 && hr < 12) {
+                greeting = "Good Morning, Umar";
+            } else if (hr >= 12 && hr < 17) {
+                greeting = "Good Afternoon, Umar";
+            } else if (hr >= 17 && hr < 22) {
+                greeting = "Good Evening, Umar";
+            } else {
+                greeting = "Late night hunting, Umar";
+            }
+            greetingTextEl.textContent = greeting;
+        }
+
+        // Initialize clock
+        updateTime();
+        setInterval(updateTime, 1000);
+        newQuote();
+
+        // Register quote element click to cycle manually
+        document.getElementById('time').addEventListener('dblclick', updateTime);
+    </script>
+</body>
+</html>

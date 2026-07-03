@@ -1,0 +1,64 @@
+configuration {
+    modi: "drun,run";
+    font: "FiraCode Nerd Font 10";
+    show-icons: false;
+    terminal: "alacritty";
+    drun-display-format: "{name}";
+}
+
+@theme "/dev/null"
+
+* {
+    bg: #09050eE6;
+    fg: #ebd9fc;
+    accent: #9f52f0;
+    bg-selected: #1a1226CC;
+    
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    width: 30%;
+    border: 2px;
+    border-color: @accent;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: @bg;
+}
+
+mainbox {
+    children: [ inputbar, listview ];
+}
+
+inputbar {
+    children: [ prompt, entry ];
+    padding: 5px;
+    border: 0 0 1px 0;
+    border-color: @accent;
+}
+
+prompt {
+    text-color: @accent;
+    padding: 0 10px 0 0;
+}
+
+entry {
+    placeholder: "Search...";
+    placeholder-color: #4d3968;
+}
+
+listview {
+    lines: 8;
+    padding: 10px 0 0 0;
+}
+
+element {
+    padding: 5px;
+    border-radius: 4px;
+}
+
+element selected {
+    background-color: @bg-selected;
+    text-color: @accent;
+}
