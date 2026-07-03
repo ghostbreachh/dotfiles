@@ -10,7 +10,6 @@ Welcome to the **Majestic Purple & Black** desktop environment customization ("r
 
 ## 📸 Desktop Visuals & Gallery
 
-Place your screenshots and showcase previews inside the `assets/` folder to populate this gallery:
 
 | 💻 Full Desktop Overview | 💊 Floating Capsule Polybar |
 | :---: | :---: |
